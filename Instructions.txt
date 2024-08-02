@@ -1,0 +1,6 @@
+Devoir 1: write my name on screen
+Devoir 2: Write int in console from 1 to the user's number
+Devoir 3: Calcul de l' equation quadratique
+Devoir 4: A list of choice for arithmetic operations
+Devoir 5: A calculator for basic arithmetic operations
+

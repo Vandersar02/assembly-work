@@ -1,0 +1,446 @@
+Microsoft (R) Macro Assembler (x64) Version 14.38.33135.0   04/17/24 22:56:04
+assemblyProject.asm					     Page 1 - 1
+
+
+				ExitProcess proto
+				WriteString proto
+				ReadInt64 proto
+				WriteInt64 proto
+				Crlf proto
+
+ 00000000			.data
+ 00000000 59 6F 75 20 63	choiceMessage byte "You choose ", 0
+	   68 6F 6F 73 65
+	   20 00
+ 0000000C 45 6E 74 65 72	menuPrompt BYTE "Enter your choice (1-5 for operations, 0 to quit): ", 0
+	   20 79 6F 75 72
+	   20 63 68 6F 69
+	   63 65 20 28 31
+	   2D 35 20 66 6F
+	   72 20 6F 70 65
+	   72 61 74 69 6F
+	   6E 73 2C 20 30
+	   20 74 6F 20 71
+	   75 69 74 29 3A
+	   20 00
+ 00000040 45 6E 74 65 72	ChooseOption BYTE "Enter your Choice: ", 0
+	   20 79 6F 75 72
+	   20 43 68 6F 69
+	   63 65 3A 20 00
+
+ 00000054 31 2E 20 41 64	addMessage BYTE "1. Addition", 0
+	   64 69 74 69 6F
+	   6E 00
+ 00000060 32 2E 20 53 75	subMessage BYTE "2. Subtraction", 0
+	   62 74 72 61 63
+	   74 69 6F 6E 00
+ 0000006F 33 2E 20 4D 75	mulMessage BYTE "3. Multiplication", 0
+	   6C 74 69 70 6C
+	   69 63 61 74 69
+	   6F 6E 00
+ 00000081 34 2E 20 44 69	divMessage BYTE "4. Division", 0
+	   76 69 73 69 6F
+	   6E 00
+ 0000008D 35 2E 20 4D 6F	modMessage BYTE "5. Modulo", 0
+	   64 75 6C 6F 00
+ 00000097 30 2E 20 51 55	quitMessage BYTE "0. QUIT", 0
+	   49 54 00
+
+				; taking value for operations
+
+ 0000009F 45 6E 74 65 72	takingValue BYTE "Enter two values for operations", 0
+	   20 74 77 6F 20
+	   76 61 6C 75 65
+	   73 20 66 6F 72
+	   20 6F 70 65 72
+	   61 74 69 6F 6E
+	   73 00
+ 000000BF 56 61 6C 75 65	valueA BYTE "Value a: ", 0
+	   20 61 3A 20 00
+ 000000C9 56 61 6C 75 65	valueB BYTE "Value b: ", 0
+	   20 62 3A 20 00
+ 000000D3 52 65 73 75 6C	resultMessage BYTE "Result: ", 0
+	   74 3A 20 00
+ 000000DC 44 69 76 69 73	DivisionZero Byte "Division par 0", 0
+	   69 6F 6E 20 70
+	   61 72 20 30 00
+ 000000EB 00000000		a SDWORD ?
+ 000000EF 00000000		b SDWORD ?
+ 000000F3 00000000		result SDWORD ?
+
+ 00000000			.code
+ 00000000			main proc
+ 00000000  48/ BA		    mov rdx, OFFSET menuPrompt
+	   000000000000000C R
+ 0000000A  E8 00000000 E	    call WriteString
+ 0000000F  E8 00000000 E	    call Crlf
+
+ 00000014  48/ BA		    mov rdx, OFFSET addMessage
+	   0000000000000054 R
+ 0000001E  E8 00000000 E	    call WriteString
+ 00000023  E8 00000000 E	    call Crlf
+
+ 00000028  48/ BA		    mov rdx, OFFSET subMessage
+	   0000000000000060 R
+ 00000032  E8 00000000 E	    call WriteString
+ 00000037  E8 00000000 E	    call Crlf
+
+ 0000003C  48/ BA		    mov rdx, OFFSET mulMessage
+	   000000000000006F R
+ 00000046  E8 00000000 E	    call WriteString
+ 0000004B  E8 00000000 E	    call Crlf
+
+ 00000050  48/ BA		    mov rdx, OFFSET divMessage
+	   0000000000000081 R
+ 0000005A  E8 00000000 E	    call WriteString
+ 0000005F  E8 00000000 E	    call Crlf
+
+ 00000064  48/ BA		    mov rdx, OFFSET modMessage
+	   000000000000008D R
+ 0000006E  E8 00000000 E	    call WriteString
+ 00000073  E8 00000000 E	    call Crlf
+
+ 00000078  48/ BA		    mov rdx, OFFSET quitMessage
+	   0000000000000097 R
+ 00000082  E8 00000000 E	    call WriteString
+ 00000087  E8 00000000 E	    call Crlf
+
+ 0000008C  48/ BA		    mov rdx, OFFSET ChooseOption
+	   0000000000000040 R
+ 00000096  E8 00000000 E	    call WriteString
+
+				    ; Read user input
+ 0000009B  E8 00000000 E	    call ReadInt64
+ 000000A0  E8 00000000 E	    call Crlf
+
+				    ; Compare user choice
+ 000000A5  48/ 83 F8 01		    cmp rax, 1
+ 000000A9  74 37		    je addition
+ 000000AB  48/ 83 F8 02		    cmp rax, 2
+ 000000AF  0F 84 000000C6	    je subtraction
+ 000000B5  48/ 83 F8 03		    cmp rax, 3
+ 000000B9  0F 84 00000155	    je multiplication
+ 000000BF  48/ 83 F8 04		    cmp rax, 4
+ 000000C3  0F 84 000001E7	    je division
+ 000000C9  48/ 83 F8 05		    cmp rax, 5
+ 000000CD  0F 84 0000028B	    je modulo
+ 000000D3  48/ 83 F8 00		    cmp rax, 0
+ 000000D7  0F 84 0000034D	    je quit
+
+				    ; Invalid choice
+ 000000DD  E9 0000036C		    jmp invalidChoice
+
+ 000000E2			addition:
+ 000000E2  48/ BA		    mov rdx, OFFSET choiceMessage
+	   0000000000000000 R
+ 000000EC  E8 00000000 E	    call WriteString
+ 000000F1  48/ BA		    mov rdx, OFFSET addMessage
+	   0000000000000054 R
+ 000000FB  48/ 83 C2 03		    add rdx, 3
+ 000000FF  E8 00000000 E	    call WriteString
+ 00000104  E8 00000000 E	    call Crlf
+ 00000109  E8 00000000 E	    call Crlf
+
+
+				    ; taking value to make operations
+ 0000010E  48/ BA		    mov rdx, OFFSET takingValue
+	   000000000000009F R
+ 00000118  E8 00000000 E	    call WriteString
+ 0000011D  E8 00000000 E	    call Crlf
+
+ 00000122  48/ BA		    mov rdx, OFFSET valueA
+	   00000000000000BF R
+ 0000012C  E8 00000000 E	    call WriteString
+ 00000131  E8 00000000 E	    call ReadInt64
+ 00000136  89 05 000000EB R	    mov a, eax
+
+ 0000013C  48/ BA		    mov rdx, OFFSET valueB
+	   00000000000000C9 R
+ 00000146  E8 00000000 E	    call WriteString
+ 0000014B  E8 00000000 E	    call ReadInt64
+ 00000150  89 05 000000EF R	    mov b, eax
+
+ 00000156  48/ BA		    mov rdx, OFFSET resultMessage
+	   00000000000000D3 R
+ 00000160  E8 00000000 E	    call WriteString
+
+				    ; let's do the operations here
+ 00000165  8B 05 000000EB R	    mov eax, a
+ 0000016B  03 05 000000EF R	    add eax, b
+
+ 00000171  E8 00000000 E	    call WriteInt64
+
+ 00000176  E9 000002DD		    jmp endProgram
+
+ 0000017B			subtraction:
+ 0000017B  48/ BA		    mov rdx, OFFSET choiceMessage
+	   0000000000000000 R
+ 00000185  E8 00000000 E	    call WriteString
+ 0000018A  48/ BA		    mov rdx, OFFSET subMessage
+	   0000000000000060 R
+ 00000194  48/ 83 C2 03		    add rdx, 3
+ 00000198  E8 00000000 E	    call WriteString
+ 0000019D  E8 00000000 E	    call Crlf
+ 000001A2  E8 00000000 E	    call Crlf
+
+
+				    ; taking value to make operations
+ 000001A7  48/ BA		    mov rdx, OFFSET takingValue
+	   000000000000009F R
+ 000001B1  E8 00000000 E	    call WriteString
+ 000001B6  E8 00000000 E	    call Crlf
+
+ 000001BB  48/ BA		    mov rdx, OFFSET valueA
+	   00000000000000BF R
+ 000001C5  E8 00000000 E	    call WriteString
+ 000001CA  E8 00000000 E	    call ReadInt64
+ 000001CF  89 05 000000EB R	    mov a, eax
+
+ 000001D5  48/ BA		    mov rdx, OFFSET valueB
+	   00000000000000C9 R
+ 000001DF  E8 00000000 E	    call WriteString
+ 000001E4  E8 00000000 E	    call ReadInt64
+ 000001E9  89 05 000000EF R	    mov b, eax
+
+				    
+ 000001EF  48/ BA		    mov rdx, OFFSET resultMessage
+	   00000000000000D3 R
+ 000001F9  E8 00000000 E	    call WriteString
+
+				    ; let's do the operations here
+ 000001FE  8B 05 000000EB R	    mov eax, a
+ 00000204  2B 05 000000EF R	    sub eax, b
+
+ 0000020A  E8 00000000 E	    call WriteInt64
+
+ 0000020F  E9 00000244		    jmp endProgram
+
+ 00000214			multiplication:
+ 00000214  48/ BA		    mov rdx, OFFSET choiceMessage
+	   0000000000000000 R
+ 0000021E  E8 00000000 E	    call WriteString
+ 00000223  48/ BA		    mov rdx, OFFSET mulMessage
+	   000000000000006F R
+ 0000022D  48/ 83 C2 03		    add rdx, 3
+ 00000231  E8 00000000 E	    call WriteString
+ 00000236  E8 00000000 E	    call Crlf
+ 0000023B  E8 00000000 E	    call Crlf
+
+
+				    ; taking value to make operations
+ 00000240  48/ BA		    mov rdx, OFFSET takingValue
+	   000000000000009F R
+ 0000024A  E8 00000000 E	    call WriteString
+ 0000024F  E8 00000000 E	    call Crlf
+
+
+ 00000254  48/ BA		    mov rdx, OFFSET valueA
+	   00000000000000BF R
+ 0000025E  E8 00000000 E	    call WriteString
+ 00000263  E8 00000000 E	    call ReadInt64
+ 00000268  89 05 000000EB R	    mov a, eax
+
+ 0000026E  48/ BA		    mov rdx, OFFSET valueB
+	   00000000000000C9 R
+ 00000278  E8 00000000 E	    call WriteString
+ 0000027D  E8 00000000 E	    call ReadInt64
+ 00000282  89 05 000000EF R	    mov b, eax
+
+ 00000288  48/ BA		    mov rdx, OFFSET resultMessage
+	   00000000000000D3 R
+ 00000292  E8 00000000 E	    call WriteString
+
+				    ; let's do the operations here
+ 00000297  8B 05 000000EB R	    mov eax, a
+ 0000029D  99			    cdq
+ 0000029E  8B 1D 000000EF R	    mov ebx, b       ; Place b in ebx
+ 000002A4  F7 EB		    imul ebx  
+
+ 000002A6  E8 00000000 E	    call WriteInt64
+
+ 000002AB  E9 000001A8		    jmp endProgram
+
+ 000002B0			division:
+ 000002B0  48/ BA		    mov rdx, OFFSET choiceMessage
+	   0000000000000000 R
+ 000002BA  E8 00000000 E	    call WriteString
+ 000002BF  48/ BA		    mov rdx, OFFSET divMessage
+	   0000000000000081 R
+ 000002C9  48/ 83 C2 03		    add rdx, 3
+ 000002CD  E8 00000000 E	    call WriteString
+ 000002D2  E8 00000000 E	    call Crlf
+ 000002D7  E8 00000000 E	    call Crlf
+
+
+				    ; taking value to make operations
+ 000002DC  48/ BA		    mov rdx, OFFSET takingValue
+	   000000000000009F R
+ 000002E6  E8 00000000 E	    call WriteString
+ 000002EB  E8 00000000 E	    call Crlf
+
+ 000002F0  48/ BA		    mov rdx, OFFSET valueA
+	   00000000000000BF R
+ 000002FA  E8 00000000 E	    call WriteString
+ 000002FF  E8 00000000 E	    call ReadInt64
+ 00000304  89 05 000000EB R	    mov a, eax
+
+ 0000030A  48/ BA		    mov rdx, OFFSET valueB
+	   00000000000000C9 R
+ 00000314  E8 00000000 E	    call WriteString
+ 00000319  E8 00000000 E	    call ReadInt64
+ 0000031E  89 05 000000EF R	    mov b, eax
+
+				    ; Check for division by zero
+ 00000324  83 3D 000000EF R	    cmp b, 0
+	   00
+ 0000032B  E8 00000000 E	    call Crlf
+ 00000330  0F 84 000000D6	    je divisionByZero
+
+				    
+ 00000336  48/ BA		    mov rdx, OFFSET resultMessage
+	   00000000000000D3 R
+ 00000340  E8 00000000 E	    call WriteString
+
+				    ; let's do the operations here
+ 00000345  8B 05 000000EB R	    mov eax, a
+ 0000034B  99			    cdq
+ 0000034C  8B 1D 000000EF R	    mov ebx, b       ; Place b in ebx
+ 00000352  F7 FB		    idiv ebx         ; Divide edx:eax by ebx; quotient in eax
+				    
+ 00000354  E8 00000000 E	    call WriteInt64
+
+ 00000359  E9 000000FA		    jmp endProgram
+
+ 0000035E			modulo:
+ 0000035E  48/ BA		    mov rdx, OFFSET choiceMessage
+	   0000000000000000 R
+ 00000368  E8 00000000 E	    call WriteString
+ 0000036D  48/ BA		    mov rdx, OFFSET modMessage
+	   000000000000008D R
+ 00000377  48/ 83 C2 03		    add rdx, 3
+ 0000037B  E8 00000000 E	    call WriteString
+ 00000380  E8 00000000 E	    call Crlf
+ 00000385  E8 00000000 E	    call Crlf
+
+				    ; taking value to make operations
+ 0000038A  48/ BA		    mov rdx, OFFSET takingValue
+	   000000000000009F R
+ 00000394  E8 00000000 E	    call WriteString
+ 00000399  E8 00000000 E	    call Crlf
+
+
+ 0000039E  48/ BA		    mov rdx, OFFSET valueA
+	   00000000000000BF R
+ 000003A8  E8 00000000 E	    call WriteString
+ 000003AD  E8 00000000 E	    call ReadInt64
+ 000003B2  89 05 000000EB R	    mov a, eax
+
+ 000003B8  48/ BA		    mov rdx, OFFSET valueB
+	   00000000000000C9 R
+ 000003C2  E8 00000000 E	    call WriteString
+ 000003C7  E8 00000000 E	    call ReadInt64
+ 000003CC  89 05 000000EF R	    mov b, eax
+
+				    ; Check for modulo by zero
+ 000003D2  83 3D 000000EF R	    cmp b, 0
+	   00
+ 000003D9  74 31		    je divisionByZero
+
+				    ; let's do the operations here
+ 000003DB  8B 05 000000EB R	    mov eax, a
+ 000003E1  99			    cdq
+ 000003E2  8B 1D 000000EF R	    mov ebx, b       ; Place b in ebx
+ 000003E8  F7 FB		    idiv ebx         ; Divide edx:eax by ebx; quotient in eax, remainder in edx
+ 000003EA  89 15 000000F3 R	    mov result, edx  ; take the rest of the division
+
+ 000003F0  48/ BA		    mov rdx, OFFSET resultMessage
+	   00000000000000D3 R
+ 000003FA  E8 00000000 E	    call WriteString
+ 000003FF  8B 05 000000F3 R	    mov eax, result
+				    
+ 00000405  E8 00000000 E	    call WriteInt64
+
+ 0000040A  EB 4C		    jmp endProgram
+
+
+ 0000040C			divisionByZero:
+ 0000040C  48/ BA		    mov rdx, OFFSET DivisionZero
+	   00000000000000DC R
+ 00000416  E8 00000000 E	    call WriteString
+ 0000041B  E8 00000000 E	    call Crlf
+ 00000420  E8 00000000 E	    call Crlf
+
+ 00000425  E9 FFFFFBD6		    jmp main
+
+ 0000042A			quit:
+ 0000042A  48/ BA		    mov rdx, OFFSET choiceMessage
+	   0000000000000000 R
+ 00000434  E8 00000000 E	    call WriteString
+ 00000439  48/ BA		    mov rdx, OFFSET quitMessage
+	   0000000000000097 R
+ 00000443  48/ 83 C2 03		    add rdx, 3
+ 00000447  E8 00000000 E	    call WriteString
+ 0000044C  EB 0A		    jmp endProgram
+
+ 0000044E			invalidChoice:
+ 0000044E  E8 00000000 E	    call Crlf
+ 00000453  E9 FFFFFBA8		    jmp main
+
+ 00000458			endProgram:
+ 00000458  E8 00000000 E	    call Crlf
+ 0000045D  E8 00000000 E	    call ExitProcess
+
+ 00000462			main endp
+
+				end
+Microsoft (R) Macro Assembler (x64) Version 14.38.33135.0   04/17/24 22:56:04
+assemblyProject.asm					     Symbols 2 - 1
+
+
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+Crlf . . . . . . . . . . . . . .	P 	 00000000 Length= 00000000 External
+ExitProcess  . . . . . . . . . .	P 	 00000000 Length= 00000000 External
+ReadInt64  . . . . . . . . . . .	P 	 00000000 Length= 00000000 External
+WriteInt64 . . . . . . . . . . .	P 	 00000000 Length= 00000000 External
+WriteString  . . . . . . . . . .	P 	 00000000 Length= 00000000 External
+main . . . . . . . . . . . . . .	P 	 00000000 _TEXT	Length= 00000462 Public
+  addition . . . . . . . . . . .	L 	 000000E2 _TEXT	
+  subtraction  . . . . . . . . .	L 	 0000017B _TEXT	
+  multiplication . . . . . . . .	L 	 00000214 _TEXT	
+  division . . . . . . . . . . .	L 	 000002B0 _TEXT	
+  modulo . . . . . . . . . . . .	L 	 0000035E _TEXT	
+  divisionByZero . . . . . . . .	L 	 0000040C _TEXT	
+  quit . . . . . . . . . . . . .	L 	 0000042A _TEXT	
+  invalidChoice  . . . . . . . .	L 	 0000044E _TEXT	
+  endProgram . . . . . . . . . .	L 	 00000458 _TEXT	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+ChooseOption . . . . . . . . . .	Byte	 00000040 _DATA	
+DivisionZero . . . . . . . . . .	Byte	 000000DC _DATA	
+addMessage . . . . . . . . . . .	Byte	 00000054 _DATA	
+a  . . . . . . . . . . . . . . .	DWord	 000000EB _DATA	
+b  . . . . . . . . . . . . . . .	DWord	 000000EF _DATA	
+choiceMessage  . . . . . . . . .	Byte	 00000000 _DATA	
+divMessage . . . . . . . . . . .	Byte	 00000081 _DATA	
+menuPrompt . . . . . . . . . . .	Byte	 0000000C _DATA	
+modMessage . . . . . . . . . . .	Byte	 0000008D _DATA	
+mulMessage . . . . . . . . . . .	Byte	 0000006F _DATA	
+quitMessage  . . . . . . . . . .	Byte	 00000097 _DATA	
+resultMessage  . . . . . . . . .	Byte	 000000D3 _DATA	
+result . . . . . . . . . . . . .	DWord	 000000F3 _DATA	
+subMessage . . . . . . . . . . .	Byte	 00000060 _DATA	
+takingValue  . . . . . . . . . .	Byte	 0000009F _DATA	
+valueA . . . . . . . . . . . . .	Byte	 000000BF _DATA	
+valueB . . . . . . . . . . . . .	Byte	 000000C9 _DATA	
+
+	   0 Warnings
+	   0 Errors
